@@ -103,7 +103,3 @@ To run the server in development mode:
 ```
 go run ./cmd/server/main.go
 ```
-
-## License
-
-[MIT](LICENSE)
