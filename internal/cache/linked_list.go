@@ -1,20 +1,24 @@
-package main
+package cache
 
+// DoublyLinkedList implements a doubly linked list for the LRU cache
 type DoublyLinkedList struct {
 	head *Node
 	tail *Node
 }
 
+// Node represents a node in the doubly linked list
 type Node struct {
 	item *CacheItem
 	next *Node
 	prev *Node
 }
 
+// NewDoublyLinkedList creates a new empty doubly linked list
 func NewDoublyLinkedList() *DoublyLinkedList {
 	return &DoublyLinkedList{}
 }
 
+// AddToFront adds an item to the front of the list
 func (dll *DoublyLinkedList) AddToFront(item *CacheItem) {
 	node := &Node{item: item}
 	if dll.head == nil {
@@ -27,6 +31,7 @@ func (dll *DoublyLinkedList) AddToFront(item *CacheItem) {
 	}
 }
 
+// MoveToFront moves an existing item to the front of the list
 func (dll *DoublyLinkedList) MoveToFront(item *CacheItem) {
 	node := dll.findNode(item)
 	if node == dll.head {
@@ -36,11 +41,13 @@ func (dll *DoublyLinkedList) MoveToFront(item *CacheItem) {
 	dll.AddToFront(item)
 }
 
+// Remove removes an item from the list
 func (dll *DoublyLinkedList) Remove(item *CacheItem) {
 	node := dll.findNode(item)
 	dll.removeNode(node)
 }
 
+// RemoveOldest removes and returns the oldest item from the list
 func (dll *DoublyLinkedList) RemoveOldest() *CacheItem {
 	if dll.tail == nil {
 		return nil
@@ -50,6 +57,7 @@ func (dll *DoublyLinkedList) RemoveOldest() *CacheItem {
 	return oldest
 }
 
+// findNode finds the node containing the given item
 func (dll *DoublyLinkedList) findNode(item *CacheItem) *Node {
 	for node := dll.head; node != nil; node = node.next {
 		if node.item == item {
@@ -59,7 +67,11 @@ func (dll *DoublyLinkedList) findNode(item *CacheItem) *Node {
 	return nil
 }
 
+// removeNode removes a node from the list
 func (dll *DoublyLinkedList) removeNode(node *Node) {
+	if node == nil {
+		return
+	}
 	if node == dll.head {
 		dll.head = node.next
 		if dll.head != nil {

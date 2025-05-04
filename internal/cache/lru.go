@@ -1,16 +1,18 @@
-package main
+package cache
 
 import (
 	"sync"
 	"time"
 )
 
+// CacheItem represents an item stored in the cache
 type CacheItem struct {
 	Key       string
 	Value     string
 	ExpiresAt time.Time
 }
 
+// LRUCache implements a Least Recently Used cache with TTL support
 type LRUCache struct {
 	capacity int
 	cache    map[string]*CacheItem
@@ -18,6 +20,7 @@ type LRUCache struct {
 	mutex    sync.RWMutex
 }
 
+// NewLRUCache creates a new LRU cache with the specified capacity
 func NewLRUCache(capacity int) *LRUCache {
 	return &LRUCache{
 		capacity: capacity,
@@ -26,6 +29,7 @@ func NewLRUCache(capacity int) *LRUCache {
 	}
 }
 
+// Get retrieves a value from the cache by key
 func (c *LRUCache) Get(key string) (string, bool) {
 	c.mutex.RLock()
 	defer c.mutex.RUnlock()
@@ -38,6 +42,7 @@ func (c *LRUCache) Get(key string) (string, bool) {
 	return item.Value, true
 }
 
+// Set adds or updates a key-value pair in the cache with a TTL
 func (c *LRUCache) Set(key string, value string, ttl time.Duration) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
@@ -63,6 +68,7 @@ func (c *LRUCache) Set(key string, value string, ttl time.Duration) {
 	c.order.AddToFront(newItem)
 }
 
+// Delete removes a key from the cache
 func (c *LRUCache) Delete(key string) {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
